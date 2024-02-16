@@ -11,7 +11,7 @@ namespace TRX_Merger
     public static class TestRunMerger
     {
 
-        public static TestRun MergeTRXsAndSave(List<string> trxFiles, string outputFile)
+        public static TestRun MergeTRXsAndSave(List<string> trxFiles, string outputFile, bool excludePassedTests, List<string> includeExplicitTests)
         {
             Console.WriteLine("Deserializing trx files:");
             List<TestRun> runs = new List<TestRun>();
@@ -22,7 +22,7 @@ namespace TRX_Merger
             }
 
             Console.WriteLine("Combining deserialized trx files...");
-            var combinedTestRun = MergeTestRuns(runs);
+            var combinedTestRun = MergeTestRuns(runs, excludePassedTests, includeExplicitTests);
 
             Console.WriteLine("Saving result...");
             var savedFile = TRXSerializationUtils.SerializeAndSaveTestRun(combinedTestRun, outputFile);
@@ -34,7 +34,7 @@ namespace TRX_Merger
             return combinedTestRun;
         }
 
-        private static TestRun MergeTestRuns(List<TestRun> testRuns)
+        private static TestRun MergeTestRuns(List<TestRun> testRuns, bool excludePassedTests, List<string> includeExplicitTests)
         {
             string name = testRuns[0].Name;
             string runUser = testRuns[0].RunUser;
@@ -63,7 +63,8 @@ namespace TRX_Merger
 
             foreach (var tr in testRuns)
             {
-                allResults = allResults.Concat(tr.Results).ToList();
+                if (excludePassedTests) allResults = allResults.Concat(tr.Results.Where(c => c.Outcome != "Passed" || includeExplicitTests.Contains(c.TestName))).ToList();
+                else allResults = allResults.Concat(tr.Results).ToList();
                 allTestDefinitions = allTestDefinitions.Concat(tr.TestDefinitions).ToList();
                 allTestEntries = allTestEntries.Concat(tr.TestEntries).ToList();
                 allTestLists = allTestLists.Concat(tr.TestLists).ToList();
