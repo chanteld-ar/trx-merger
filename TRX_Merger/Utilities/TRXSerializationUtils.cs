@@ -52,7 +52,7 @@ namespace TRX_Merger.Utilities
                                 td => new XElement("UnitTest",
                                          new XAttribute("id", td.Id),
                                          new XAttribute("name", td.Name),
-                                         new XAttribute("storage", td.Storage),
+                                         new XAttribute("storage", td.Storage ?? ""),
                                          new XElement("Execution",
                                             new XAttribute("id", td.Execution.Id)),
                                          new XElement("TestMethod",
