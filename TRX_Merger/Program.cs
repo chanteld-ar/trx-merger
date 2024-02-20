@@ -38,13 +38,13 @@ namespace TRX_Merger
                 return 1;
             }
 
-            bool excludePassedTests = false;
-            var includeExplicitTests = new List<string>();
-            string excludeExceptArg = args.Where(a => a.StartsWith("/excludePassedExcept")).FirstOrDefault();
+            bool excludeSuccessOutput = false;
+            var includeExplicitOutputTests = new List<string>();
+            string excludeExceptArg = args.Where(a => a.StartsWith("/excludeSuccessOuputExcept")).FirstOrDefault();
             if (!string.IsNullOrEmpty(excludeExceptArg))
             {
-                excludePassedTests = true;
-                includeExplicitTests = ResolveExplicitTestNames(excludeExceptArg);
+                excludeSuccessOutput = true;
+                includeExplicitOutputTests = ResolveExplicitTestNames(excludeExceptArg);
             }
 
             if (trxFiles.Count == 1)
@@ -109,7 +109,7 @@ namespace TRX_Merger
 
                 try
                 {
-                    var combinedTestRun = TestRunMerger.MergeTRXsAndSave(trxFiles, outputParam, excludePassedTests, includeExplicitTests);
+                    var combinedTestRun = TestRunMerger.MergeTRXsAndSave(trxFiles, outputParam, excludeSuccessOutput, includeExplicitOutputTests);
 
                     string reportOutput = ResolveReportLocation(args.Where(a => a.StartsWith("/report")).FirstOrDefault());
                     if (reportOutput == null)
@@ -272,10 +272,10 @@ PARAMETERS:
         {
             List<string> paths = new List<string>();
 
-            var hasNames = testNameParams.IndexOf("/excludePassedExcept:") > -1;
+            var hasNames = testNameParams.IndexOf("/excludeSuccessOuputExcept:") > -1;
             if (hasNames)
             {
-                var splitNames = testNameParams.Substring(21, testNameParams.Length - 21);
+                var splitNames = testNameParams.Substring(27, testNameParams.Length - 27);
                 if (!string.IsNullOrEmpty(splitNames))
                 {
                     paths = splitNames.Split(new char[] { ',' }).ToList();
