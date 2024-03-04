@@ -27,7 +27,7 @@ namespace TRX_Merger.ReportModel
             Duration = new TimeSpan();
             durations.ForEach(d => Duration += d);
 
-            Dll = tests[0].Dll;
+            Dll = tests.FirstOrDefault()?.Dll;
         }
 
         public string TestClassName { get; set; }

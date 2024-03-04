@@ -11,7 +11,7 @@ namespace TRX_Merger.Utilities
         private static string ns = "{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}";
 
         #region Serializers
-        internal static string SerializeAndSaveTestRun(TestRun testRun, string targetPath)
+        internal static string SerializeAndSaveTestRun(TestRun testRun, string targetPath, bool excludeSuccessOutput, List<string> includeExplicitOutputTests)
         {
             XNamespace xmlns = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
             XDocument doc =
@@ -40,7 +40,7 @@ namespace TRX_Merger.Utilities
                                         new XAttribute("testName", utr.TestName),
                                         new XAttribute("testType", utr.TestType),
                                         new XElement("Output",
-                                             utr.Output.StdOut == null ? null : new XElement("StdOut", utr.Output.StdOut),
+                                             GetStdOutElement(utr, excludeSuccessOutput, includeExplicitOutputTests),
                                              utr.Output.StdErr == null ? null : new XElement("StdErr", utr.Output.StdErr),
                                              utr.Output.ErrorInfo == null ? null :
                                              new XElement("ErrorInfo",
@@ -52,7 +52,7 @@ namespace TRX_Merger.Utilities
                                 td => new XElement("UnitTest",
                                          new XAttribute("id", td.Id),
                                          new XAttribute("name", td.Name),
-                                         new XAttribute("storage", td.Storage),
+                                         new XAttribute("storage", td.Storage ?? ""),
                                          new XElement("Execution",
                                             new XAttribute("id", td.Execution.Id)),
                                          new XElement("TestMethod",
@@ -381,6 +381,17 @@ namespace TRX_Merger.Utilities
                 Start = xElement.Attribute("start").Value,
             };
         }
+
+        private static XElement GetStdOutElement(UnitTestResult utr, bool excludeSuccessOutput, List<string> includeExplicitOutputTests)
+        {
+            var includeOuput = !excludeSuccessOutput || utr.Outcome != "Passed" || includeExplicitOutputTests.Contains(utr.TestName);
+            if (utr.Output.StdOut != null && includeOuput)
+            {
+                return new XElement("StdOut", utr.Output.StdOut);
+            }
+            return null;
+        }
+
         #endregion
 
     }

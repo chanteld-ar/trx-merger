@@ -11,7 +11,7 @@ namespace TRX_Merger
     public static class TestRunMerger
     {
 
-        public static TestRun MergeTRXsAndSave(List<string> trxFiles, string outputFile)
+        public static TestRun MergeTRXsAndSave(List<string> trxFiles, string outputFile, bool excludeSuccessOutput, List<string> includeExplicitOutputTests)
         {
             Console.WriteLine("Deserializing trx files:");
             List<TestRun> runs = new List<TestRun>();
@@ -25,7 +25,7 @@ namespace TRX_Merger
             var combinedTestRun = MergeTestRuns(runs);
 
             Console.WriteLine("Saving result...");
-            var savedFile = TRXSerializationUtils.SerializeAndSaveTestRun(combinedTestRun, outputFile);
+            var savedFile = TRXSerializationUtils.SerializeAndSaveTestRun(combinedTestRun, outputFile, excludeSuccessOutput, includeExplicitOutputTests);
 
             Console.WriteLine("Operation completed:");
             Console.WriteLine("\tCombined trx files: " + trxFiles.Count);

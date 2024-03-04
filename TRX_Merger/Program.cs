@@ -38,6 +38,15 @@ namespace TRX_Merger
                 return 1;
             }
 
+            bool excludeSuccessOutput = false;
+            var includeExplicitOutputTests = new List<string>();
+            string excludeExceptArg = args.Where(a => a.StartsWith("/excludeSuccessOuputExcept")).FirstOrDefault();
+            if (!string.IsNullOrEmpty(excludeExceptArg))
+            {
+                excludeSuccessOutput = true;
+                includeExplicitOutputTests = ResolveExplicitTestNames(excludeExceptArg);
+            }
+
             if (trxFiles.Count == 1)
             {
                 if (trxFiles[0].StartsWith("Error: "))
@@ -100,7 +109,7 @@ namespace TRX_Merger
 
                 try
                 {
-                    var combinedTestRun = TestRunMerger.MergeTRXsAndSave(trxFiles, outputParam);
+                    var combinedTestRun = TestRunMerger.MergeTRXsAndSave(trxFiles, outputParam, excludeSuccessOutput, includeExplicitOutputTests);
 
                     string reportOutput = ResolveReportLocation(args.Where(a => a.StartsWith("/report")).FirstOrDefault());
                     if (reportOutput == null)
@@ -254,6 +263,23 @@ PARAMETERS:
                 if (isDir)
                     paths.AddRange(Directory.GetFiles(a, "*.trx", searchOpts).ToList());
 
+            }
+
+            return paths;
+        }
+
+        private static List<string> ResolveExplicitTestNames(string testNameParams)
+        {
+            List<string> paths = new List<string>();
+
+            var hasNames = testNameParams.IndexOf("/excludeSuccessOuputExcept:") > -1;
+            if (hasNames)
+            {
+                var splitNames = testNameParams.Substring(27, testNameParams.Length - 27);
+                if (!string.IsNullOrEmpty(splitNames))
+                {
+                    paths = splitNames.Split(new char[] { ',' }).ToList();
+                }
             }
 
             return paths;
