@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/chanteld-ar/trx-merger/issues"
   },
-  "homepage": "https://github.com/chanteld-ar/trx-merger#readme"
+  "homepage": "https://github.com/chanteld-ar/trx-merger#readme",
+  "publishConfig": {
+    "@chanteld-ar:registry": "https://npm.pkg.github.com"
+  }
 }
